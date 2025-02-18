@@ -1,16 +1,18 @@
 #include <FronTier.h>
 #include <vector>
+#include <random> //for aerosol
 #include <petscksp.h>
 #include <assert.h>
 #include <iFluid.h>
 #include "fftw3.h"
+#include "heffte.h"
 
 #define         LIQUID_COMP2           3
 #define         SOLID_COMP             1
 #define		alternate_comp(comp) 					\
 		(comp) == LIQUID_COMP2 ? SOLID_COMP : LIQUID_COMP2
 #ifndef __CUDA__
-#define __CUDA__
+//#define __CUDA__
 #endif
 
 enum _CL_PROB_TYPE {
@@ -78,6 +80,10 @@ struct _PARTICLE {
 	double rho;
 	int    Gindex; /*global index to group the particles*/
 	boolean flag; /*flags for particle to be removed*/
+	double radius_d;
+	double radius_c;
+	double eqbm_supersat;
+	double growth_factor;
 };
 typedef struct _PARTICLE PARTICLE;
 
@@ -189,7 +195,7 @@ public:
 	PARAMS *eqn_params;
 	PHASE_FIELD *field;
 	int comp_size;
-
+	
 	int *lbuf,*ubuf,*gmax;
 	int *i_to_I,*I_to_i;		// Index mapping for 1D
 	int **ij_to_I,**I_to_ij;	// Index mapping for 2D
@@ -257,7 +263,10 @@ public:
 	void computeSource();
 	void computeVaporSource();
 	void computeTemperatureSource();
-
+	double computeScalarDissip(double*);
+        double computeVar(double*,double);
+	void computeScalarForce(double*);
+	
 	// interface functions
 	void makeGridIntfc();
 	void deleteGridIntfc();
@@ -283,6 +292,9 @@ public:
 	void output();
         void vtk_plot3d(const char*,double*);
 
+	void recordParticleRadius(); //new print function
+	void recordNodalValues(); //new print function
+	
 	// Extra movie functions
 	void temperatureMovie(char*);
 
@@ -335,6 +347,7 @@ public:
 	void computeVolumeForce();
 	void computeVolumeForceFourier();
 	void computeVolumeForceLinear();
+	void computeVolumeForceFourierHefftePlain();
 	double computeDspRate();
 	double computeDspRateLinear();
 #ifdef __HDF5__
@@ -420,6 +433,7 @@ extern void setParticleGroupIndex(PARTICLE*,int,int,int*,double*,double*);
 extern void read_CL_prob_type(Front*);
 extern void readWaterDropsParams(Front*,char*);
 extern void printDropletsStates(Front*,char*);
+
 /*plot functions*/
 extern void gv_plot_scatter(Front*);
 extern void vtk_plot_scatter(Front*);

@@ -64,7 +64,8 @@ else()
 endif()
  
 #set(HDF4_ROOT_DIR /global/homes/z/zhangtao/soft/hdf-4.2.14/ins)
-set(HDF4_ROOT_DIR "/sdcc/u/tzhang/soft/miniconda3/envs/pr-dns//")
+#set(HDF4_ROOT_DIR "/sdcc/u/tzhang/soft/miniconda3/envs/pr-dns//")
+set(HDF4_ROOT_DIR "/global/homes/p/prince93/.conda/envs/pr-dns/")
 #set(HDF4_ROOT_DIR /global/common/cori_cle6/software/hdf/4.2.11/hsw/intel/)
 
 FIND_PATH (HDF4_INCLUDE_DIRS "hdf.h"

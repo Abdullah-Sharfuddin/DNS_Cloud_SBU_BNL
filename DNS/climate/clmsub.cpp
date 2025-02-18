@@ -448,7 +448,9 @@ static void Rogallo_state(
 	    gmax[i] = N[i];
 	    Nr *= N[i];
 	}
-	w0 = 2.449489743;
+	//w0 = 3.91;
+	w0 = 12.56;
+
 	gmax[dim-1] = N[dim-1]/2 + 1; 
 	U = new fftw_complex[Nr];
 	V = new fftw_complex[Nr];
@@ -1050,54 +1052,134 @@ extern void ParticlePropagate(Front *fr)
 	PARTICLE* particle_array = eqn_params->particle_array;
 	double **vel = iFparams->field->vel;
 	double *supersat = eqn_params->field->supersat;
+	//double *temperature = eqn_params->field->temperature;
 	double *gravity = iFparams->gravity;
         int *gmax = FT_GridIntfcTopGmax(fr);
 	int i, j, index, dim = gr->dim;
-	double T;
 	int ic[MAXD];
 	double u[MAXD];
 	double *center;
-	double s; /*restore local supersaturation*/
-	double *cvel; /*center velocity for droplets*/
-	double a;  /*acceleration*/
+	double s; //restore local supersaturation
+	double temp; //restore local temperature
+	double *cvel; //center velocity for droplets
+	double a;  //acceleration
 	double dt = fr->dt;
 
-        /*computing finite respone time*/
-        double rho_0    = iFparams->rho2;/*fluid density*/
-        double mu       = iFparams->mu2;/*viscosity*/
+        //computing finite respone time
+        double rho_0    = iFparams->rho2;//fluid density
+        double mu       = iFparams->mu2;//viscosity
 	double R, rho, tau_p, delta_R;
 	double R_max = 0;
 	double R_min = HUGE;
 	double w = 2*PI/5.0;
+
+	///Aerosol part	
+
+	int comp_size, size;
+	double rho_w;
+	double rd, rc;
+	double Sk;
+	double sigC = 0.072;
+	double kappa = 0.61;
+	double R_univ = 8.314;
+	double Mw = 0.018;
+	double A, T;
+	double rho_a, Cp;
+	double Ma, lambda;
+	double alpha_T, alpha_C;
+	double Kc, D;
+	double Kc_prime, D_prime;
+	double Lh, Rv, es;
+	double pi, G;
+
+	T = 0.0;
+
+	for (index=0; index < comp_size; index++)
+	{
+            T += eqn_params->field->temperature[index];
+	}
+	size = comp_size;
+	T /= size;
+
+	rho_w = eqn_params->rho_l;
+	rho_a = iFparams->rho2;
+	Cp = eqn_params->Cp;
+	Ma = 0.029;
+	lambda = 1.2e-7;
+	alpha_T = 1.0;
+	alpha_C = 1.0;
+	pi = 3.1416;
+
+	Kc = eqn_params->Kc;
+	D = eqn_params->D;
+	Lh = eqn_params->Lh;
+        Rv = eqn_params->Rv;
+
+	es = 611.2*exp(17.67*(T-273.15)/(T-29.65));
 	
 	for (i = 0; i < eqn_params->num_drops; i++)
 	{
-            /*computing finite respone time*/
-            R        = particle_array[i].radius;/*droplet radius*/
-            rho      = particle_array[i].rho;/*water droplet density*/
-            tau_p    = 2 * rho*R*R/(9*rho_0*mu);/*response time*/
+            //computing finite respone time
+            R        = particle_array[i].radius;//droplet radius
+            rho      = particle_array[i].rho;//water droplet density
+            tau_p    = 2 * rho*R*R/(9*rho_0*mu);//response time
 
 	    if (R == 0)
 	    {
 		R_min = 0;
 	        continue;
 	    }
-	    /*find index at coords*/
+
+	    //find index at coords
 	    center = particle_array[i].center;
 	    rect_in_which(center,ic,gr);
 	    index = d_index(ic,gmax,dim);
 	    cvel = particle_array[i].vel;
-	    /*compute radius for particle[i]*/
+	    
+	    //trilinear interpolation
 	    s = supersat[index];
-
-	    for (j = 0; j < dim; j++)
-	     FT_IntrpStateVarAtCoords(fr,LIQUID_COMP,center,
+	    temp = eqn_params->field->temperature[index];
+	    
+	    for (j = 0; j < dim; j++){
+		FT_IntrpStateVarAtCoords(fr,LIQUID_COMP,center,
 				vel[j],getStateVel[j],&u[j],&vel[j][index]);
-	    FT_IntrpStateVarAtCoords(fr,LIQUID_COMP,center,
+		FT_IntrpStateVarAtCoords(fr,LIQUID_COMP,center,
 				supersat,getStateSuper,&s,&s);
+		FT_IntrpStateVarAtCoords(fr,LIQUID_COMP,center,
+				eqn_params->field->temperature,getStateTemperature,&temp,&temp);
+		}
+
+	    //compute aerosol parameters
+
+	    rd = particle_array[i].radius_d;
+	    A = (2*sigC*Mw)/(R_univ*temp*rho_w);
+	    
+	    if (R > rd)
+		    Sk = (A/R) - kappa*(pow((rd/R),3));
+	    else
+		    Sk = 0;
+
+	    particle_array[i].eqbm_supersat = Sk;
+
+            Kc_prime = 1 + (Kc/(alpha_T*R*rho_a*Cp))*(sqrt((2*pi*Ma)/(R_univ*T)));
+	    Kc_prime = Kc / Kc_prime;
+
+	    D_prime = 1 + (D/(alpha_C*R))*(sqrt((2*pi*Mw)/(R_univ*T)));
+	    D_prime = D / D_prime;
+
+	    G = (Lh/(Rv*T)-1)*(Lh*rho_w)*(1+Sk)/(Kc_prime*T) + (rho_w*Rv*T)/(D_prime*es);
+	    G = 1/G;
+
+	    particle_array[i].growth_factor = G;
+
+	    rc = sqrt((3*kappa*pow(rd,3))/A);
+	    particle_array[i].radius_c = rc; 
+	    
+	    //update particle radius
 
 	    if (eqn_params->if_condensation == YES)
-	        delta_R = R*R+2*eqn_params->K*s*dt;
+	        //delta_R = R*R+2*eqn_params->K*s*dt;
+	        delta_R = R*R+2*G*(s-Sk)*dt;
 	    else
 	        delta_R = R*R;
 
@@ -1107,12 +1189,13 @@ extern void ParticlePropagate(Front *fr)
 	        R = sqrt(delta_R);
 
 	    particle_array[i].radius = R;
-	    /*save max and min radius*/
+	    //save max and min radius
 	    if(R > R_max)
 		R_max = R;
 	    if(R < R_min)
 		R_min = R;
-	    /*compute velocity for particle[i] with implicit method*/
+	    
+	    //update particle position and velocity using implicit Euler method
 	    for(j = 0; j < dim; ++j)
             {
 		//update velocity and position of particles
@@ -1137,20 +1220,9 @@ extern void ParticlePropagate(Front *fr)
                                 + (1-exp(-dt/tau_p))*(u[j]);
                 }
 
-		/*compute velocity
-		if (eqn_params->if_sedimentation == YES) 
-		    cvel[j] += (vel[j][index]/tau_p + gravity[j])*dt;
-		else
-		    cvel[j] += vel[j][index]/tau_p*dt;
-
-		cvel[j] /= (1+dt/tau_p); 
-
-	  	compute center of particle[i]
-		center[j] += cvel[j]*dt;*/
-
 		if(pp_numnodes() > 1)
 		    continue;
-		/*handle periodic drops for one processor*/
+		//handle periodic drops for one processor
 		T = rect_grid->U[j]-rect_grid->L[j];	
 		if (center[j] > rect_grid->U[j])
 		    center[j] = rect_grid->L[j]+fmod(center[j],T);
@@ -1722,3 +1794,5 @@ extern double* ComputePDF(
 	    printf("Leaving computePDF\n");
 	return PDF;
 }
+
+

@@ -1,4 +1,4 @@
-# Install script for directory: /sdcc/u/tzhang/PR_DNS_base/DNS
+# Install script for directory: /global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -37,13 +37,29 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for each subdirectory.
-  include("/sdcc/u/tzhang/PR_DNS_base/DNS/climate/cmake_install.cmake")
-  include("/sdcc/u/tzhang/PR_DNS_base/DNS/iFluid/cmake_install.cmake")
-  include("/sdcc/u/tzhang/PR_DNS_base/DNS/src/cmake_install.cmake")
-  include("/sdcc/u/tzhang/PR_DNS_base/DNS/solver/cmake_install.cmake")
+# Set default install directory permissions.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+endif()
 
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/climate/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/iFluid/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/src/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/solver/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -54,5 +70,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/sdcc/u/tzhang/PR_DNS_base/DNS/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

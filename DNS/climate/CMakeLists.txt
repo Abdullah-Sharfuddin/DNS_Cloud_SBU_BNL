@@ -40,4 +40,5 @@ target_include_directories(climate PUBLIC
 
 #link libraries
 target_link_libraries(climate frontier solver ifluid ${FFTW3_LIBRARY} ${MPI_C_LIBRARIES})
+target_link_libraries(climate Heffte::Heffte)
 

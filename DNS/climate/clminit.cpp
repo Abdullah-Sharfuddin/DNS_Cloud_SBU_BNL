@@ -527,6 +527,7 @@ extern void initWaterDrops(
         IF_PARAMS *iFparams = (IF_PARAMS*)front->extra1;
 	PARAMS *eqn_params  = (PARAMS*)front->extra2;
 	PARTICLE* particle_array;
+	double rr;
 
         (void) printf("Water phase state can be\n");
         (void) printf("\tIce Particle (I)\n");
@@ -599,7 +600,9 @@ extern void initWaterDrops(
             fscanf(infile,"%lf",&sigma);
             (void) printf("%f\n",sigma);
 	    if (eqn_params->prob_type == PARTICLE_TRACKING)
+	    {
 		particle_array = initRandomParticles(front,num_drops,r_bar,sigma);
+	    }
 	    else
                 initRandomDrops(front,center,radius,gindex,&num_drops,r_bar,sigma);
             break;
@@ -702,6 +705,7 @@ static PARTICLE *initRandomParticles(
 	    cArea *= U[i] - L[i];
 	    nArea *= nU[i] - nL[i];
 	}
+
 	num_drops *= nArea/cArea;
 	num_drops  = (int)num_drops;
 
@@ -934,3 +938,4 @@ extern void read_crt_dirichlet_bdry_data(
 	}
 	fclose(infile);
 }	/* end read_crt_dirichlet_bdry_data */
+

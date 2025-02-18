@@ -1,0 +1,14 @@
+/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/CMakeFiles/edit_cache.dir
+/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/CMakeFiles/rebuild_cache.dir
+/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/climate/CMakeFiles/climate.dir
+/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/climate/CMakeFiles/edit_cache.dir
+/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/climate/CMakeFiles/rebuild_cache.dir
+/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/iFluid/CMakeFiles/ifluid.dir
+/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/iFluid/CMakeFiles/edit_cache.dir
+/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/iFluid/CMakeFiles/rebuild_cache.dir
+/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/src/CMakeFiles/frontier.dir
+/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/src/CMakeFiles/edit_cache.dir
+/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/src/CMakeFiles/rebuild_cache.dir
+/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/solver/CMakeFiles/solver.dir
+/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/solver/CMakeFiles/edit_cache.dir
+/global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/solver/CMakeFiles/rebuild_cache.dir

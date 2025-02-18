@@ -49,7 +49,7 @@ static void	melt_flow_point_propagate(Front*,POINTER,POINT*,POINT*,
 			HYPER_SURF_ELEMENT*,HYPER_SURF*,double,double*);
 
 extern  char  *in_name;
-char *restart_state_name,*restart_name,*out_name;
+char *restart_state_name,*restart_name,*out_name1;
 boolean RestartRun;
 boolean ReadFromInput;
 int RestartStep;
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 
 	in_name      		= f_basic.in_name;
 	restart_state_name      = f_basic.restart_state_name;
-    out_name     		= f_basic.out_name;
+    out_name1     		= f_basic.out_name;
     restart_name 		= f_basic.restart_name;
     RestartRun   		= f_basic.RestartRun;
     ReadFromInput   	= f_basic.ReadFromInput;
@@ -226,37 +226,36 @@ static  void melting_flow_driver(
 
    if (!RestartRun)
    {
-	    FT_ResetTime(front);
+	FT_ResetTime(front);
         FT_SetOutputCounter(front);
-            /* Front standard output*/
-	   /* FT_Save(front,out_name);
-            v_cartesian->printFrontInteriorState(out_name);
-            l_cartesian->printFrontInteriorStates(out_name);
-	    if (eqn_params->prob_type == PARTICLE_TRACKING)
-	        printDropletsStates(front,out_name);*/
+        /* Front standard output*/
+	/* FT_Save(front,out_name1);
+        v_cartesian->printFrontInteriorState(out_name1);
+        l_cartesian->printFrontInteriorStates(out_name1);
+	if (eqn_params->prob_type == PARTICLE_TRACKING)
+		 printDropletsStates(front,out_name1);*/
 
-	    FT_Propagate(front);
+	FT_Propagate(front);
 
-	    l_cartesian->solve(front->dt); /*compute pressure for vapor equation*/
+	l_cartesian->solve(front->dt); /*compute pressure for vapor equation*/
 
-	    v_cartesian->solve(front->dt); /*solve vapor equation*/
-	    printf("passed solving vapor and temperature\n\n");
-	    /*For entrainment problem, droplets in area with supersat > 0*/
-	    /*This step must be after one step of v_catesian solver*/
-	    if(eqn_params->init_drop_state == PRESET_STATE)
+	v_cartesian->solve(front->dt); /*solve vapor equation*/
+	printf("passed solving vapor and temperature\n\n");
+	/*For entrainment problem, droplets in area with supersat > 0*/
+	/*This step must be after one step of v_catesian solver*/
+	if(eqn_params->init_drop_state == PRESET_STATE)
 		v_cartesian->initPresetParticles(); 
 
-	    /*For checking the result*/
-	    v_cartesian->checkField();
-	    printf("Passed checkField()\n");
+	/*For checking the result*/
+	v_cartesian->checkField();
+	printf("Passed checkField()\n");
 
-	    /*Set time step for front*/
-	    FT_SetTimeStep(front);
-	    l_cartesian->setAdvectionDt();
-	    front->dt = std::min(front->dt,CFL*l_cartesian->max_dt);
-
-	    
-        l_cartesian->initMovieVariables();
+	/*Set time step for front*/
+	FT_SetTimeStep(front);
+	l_cartesian->setAdvectionDt();
+	front->dt = std::min(front->dt,CFL*l_cartesian->max_dt);
+		
+	l_cartesian->initMovieVariables();
         v_cartesian->initMovieVariables();
 
         if (eqn_params->prob_type == PARTICLE_TRACKING &&
@@ -264,7 +263,7 @@ static  void melting_flow_driver(
 	    {
                 vtk_plot_scatter(front);
 	    }
-            FT_AddMovieFrame(front,out_name,YES);
+            FT_AddMovieFrame(front,out_name1,YES);
         }
         else
 	{
@@ -272,12 +271,12 @@ static  void melting_flow_driver(
             v_cartesian->initMovieVariables();
             if (eqn_params->prob_type == PARTICLE_TRACKING)
                 vtk_plot_scatter(front);
-            FT_AddMovieFrame(front,out_name,YES);
+            FT_AddMovieFrame(front,out_name1,YES);
 	}
-
+	
 	FT_TimeControlFilter(front);
 	/*Record the initial condition*/
-	/*v_cartesian->recordField(out_name,"velocity");*/
+	/*v_cartesian->recordField(out_name1,"velocity");*/
     if (eqn_params->prob_type == PARTICLE_TRACKING)
 	    v_cartesian->output();
 
@@ -292,8 +291,8 @@ static  void melting_flow_driver(
 	    l_cartesian->solve(front->dt);
 	    printf("Passed solving NS equations\n");
 	    v_cartesian->recordTKE();
-
-	    if (eqn_params->if_volume_force && front->time < 1.0)
+	    
+	    if (eqn_params->if_volume_force && front->time < 2.0)
 	    {
                 v_cartesian->solve(0.0);
 	    }
@@ -338,14 +337,14 @@ static  void melting_flow_driver(
 		    vtk_plot_scatter(front);
 		    vtk_plot_sample_traj(front);
 		}
-                FT_AddMovieFrame(front,out_name,YES);
+                FT_AddMovieFrame(front,out_name1,YES);
 	    }
 
             if (FT_TimeLimitReached(front))
 	    {
 		if(movie_option->plot_particles == YES)
                     vtk_plot_scatter(front);
-	    	FT_AddMovieFrame(front,out_name,YES);
+	    	FT_AddMovieFrame(front,out_name1,YES);
                 break;
 	    }
 	    /* Output section, next dt may be modified */

@@ -387,7 +387,7 @@ void PETSc::Solve_withPureNeumann_HYPRE(void)
         stop_clock("Petsc Solve in pure neumann solver");
 	if (debugging("trace"))
 	printf("Leaving Solve_withPureNeumann_HYPRE()\n");
-
+	fclose(infile);//To avoid code freezing
 }
 
 void PETSc::Solve_withPureNeumann_BCGSL(void)

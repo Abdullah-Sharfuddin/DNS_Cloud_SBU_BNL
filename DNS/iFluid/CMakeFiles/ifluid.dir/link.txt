@@ -1,0 +1,2 @@
+/usr/bin/ar qc libifluid.a CMakeFiles/ifluid.dir/iFbasic.cpp.o CMakeFiles/ifluid.dir/iFcartsn2d.cpp.o CMakeFiles/ifluid.dir/iFcartsn3d.cpp.o CMakeFiles/ifluid.dir/iFinit.cpp.o CMakeFiles/ifluid.dir/iFsub.cpp.o
+/usr/bin/ranlib libifluid.a

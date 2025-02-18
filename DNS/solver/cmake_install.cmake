@@ -1,4 +1,4 @@
-# Install script for directory: /sdcc/u/tzhang/PR_DNS_base/DNS/solver
+# Install script for directory: /global/homes/p/prince93/PR_DNS_Scalar3_FronTier/DNS/solver
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -35,5 +35,10 @@ endif()
 # Is this installation the result of a crosscompile?
 if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
+endif()
+
+# Set default install directory permissions.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
 endif()
 

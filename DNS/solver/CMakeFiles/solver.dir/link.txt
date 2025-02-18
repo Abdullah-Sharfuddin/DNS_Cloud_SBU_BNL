@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsolver.a CMakeFiles/solver.dir/cim_ellip.cpp.o CMakeFiles/solver.dir/cim_parab.cpp.o CMakeFiles/solver.dir/dual_ellip.cpp.o CMakeFiles/solver.dir/ellip.cpp.o CMakeFiles/solver.dir/hyperb.cpp.o CMakeFiles/solver.dir/parab.cpp.o CMakeFiles/solver.dir/solver.cpp.o
+/usr/bin/ranlib libsolver.a

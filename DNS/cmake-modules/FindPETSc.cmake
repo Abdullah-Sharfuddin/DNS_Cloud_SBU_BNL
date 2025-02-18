@@ -13,7 +13,9 @@ else()
     get_filename_component(PETSC_DIR ${PETSCMPIEXEC}/../.. ABSOLUTE)
 endif()
 
-set(PETSC_DIR "/sdcc/u/tzhang/soft/petsc-3.16.0/")
+#set(PETSC_DIR "/sdcc/u/tzhang/soft/petsc-3.16.0/")
+set(PETSC_DIR "/global/homes/p/prince93/soft/petsc-3.16.0/")
+#set(PETSC_DIR "/global/homes/p/prince93/petsc-3.16.0-mpich/")
 MESSAGE(zhangao  ${PETSC_DIR})
 
 find_path(PETSc_INCLUDE_DIR petsc.h 
