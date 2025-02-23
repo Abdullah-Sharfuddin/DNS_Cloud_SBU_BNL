@@ -1,0 +1,53 @@
+# Disclaimer: 
+Please contact Dr. Yangang Liu at lyg@bnl.gov if you would like to use the model.  
+We are still working to improve the model by enlarging the model domain and considering more physical processes such as droplet activation/deactivation and collection, and would like to know your comments on the work or feedbacks on the model.
+
+# How to setup
+1. The project depends on the following packages
+--------------------------------------------------
+Package_Name 	Version
+--------------------------------------------------
+MPI		openmpi/mpich2
+PETSc		== 3.6 configure with HYPRE
+HDF4		>= 4.2
+GD		>= 2.2
+FFTW3		>= 3.3
+--------------------------------------------------
+The cmake modules tries to find out the path for
+each packages using $PATH variable, which can be set 
+with the following bash script. Be sure to use a 
+correct value for each variable!
+--------------------------------------------------
+#!/bin/bash
+
+export PATH=/opt/mpich2/bin:/opt/petsc3.6/bin:
+/opt/hdf4/bin:/opt/fftw3/bin:/opt/gd/bin:$PATH
+--------------------------------------------------
+2. This project is built with cmake tool.
+	cmake .
+	make
+--------------------------------------------------
+3. This project includes several modules. 
+	src: 	 source code from FronTier library
+	iFluid:  C++ library for incompressible fluid
+	solver:  KSP linear solver using PETSc
+	climate: main application directory
+--------------------------------------------------
+4. This project requires "MPI" library for parallel 
+runs. The excutable file is in "climate" directory 
+named "climate". There are several input files in 
+climate directory and can be passed to the application 
+for different experiments. For example:
+
+  mpirun -np 8 climate -d 3 -p 2 2 2 -i in-test -o out-test
+
+Explanation for the arguments:
+	-np: number of processors
+	-d:  dimension of the problem
+	-p:  parallel partition on each direction
+	-i:  input file name 
+	-o:  output file name
+---------------------------------------------------
+5. The code can be updated from
+https://github.com/antdvid/climate
+---------------------------------------------------
