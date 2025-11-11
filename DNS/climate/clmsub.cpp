@@ -228,7 +228,7 @@ static void vFourier_state(
 {
 	double qs, qe, qmax;
 	qs = eqn_params->qs; qe = eqn_params->qe;
-        qmax = qs * 1.02;  //2% supersaturated cloudy region
+        qmax = qs * 1.05;
 	if (field->vel[0][index] > 0)
 	    field->vapor[index] = qmax;
 	else
@@ -254,7 +254,7 @@ static void lr_state(
 
 	qe = eqn_params->qe;
 	qs = eqn_params->qs;
-	qmax = qs * 1.02;  //2% supersaturated cloudy region
+	qmax = qs * 1.05;
 	if (eqn_params->frac > 0 && eqn_params->frac < 1)
 	{
 	    if (coords[0] > x0 - width*frac*0.5 &&
@@ -291,7 +291,7 @@ static void tb_state(
 
 	qs = eqn_params->qs; 
 	qe = eqn_params->qe;
-	qmax = qs * 1.02;  //2% supersaturated cloudy region
+	qmax = qs * 1.05;
 
 	if (eqn_params->frac > 0 && eqn_params->frac < 1)
 	{
@@ -448,9 +448,8 @@ static void Rogallo_state(
 	    gmax[i] = N[i];
 	    Nr *= N[i];
 	}
-	//w0 = 2.0;
-	w0 = 4.0;
-	//w0 = 8.0;
+	w0 = 3.91;
+	//w0 = 12.56;
 
 	gmax[dim-1] = N[dim-1]/2 + 1; 
 	U = new fftw_complex[Nr];
@@ -458,7 +457,7 @@ static void Rogallo_state(
 	if (dim == 3)
 	    W = new fftw_complex[Nr];
 	Div = new fftw_complex[Nr];
-	
+
 
 	switch (dim)
 	{
@@ -1162,7 +1161,7 @@ extern void ParticlePropagate(Front *fr)
 
 	    particle_array[i].eqbm_supersat = Sk;
 
-            Kc_prime = 1 + (Kc/(alpha_T*R*rho_a*Cp))*(sqrt((2*pi*Ma)/(R_univ*T)));
+        Kc_prime = 1 + (Kc/(alpha_T*R*rho_a*Cp))*(sqrt((2*pi*Ma)/(R_univ*T)));
 	    Kc_prime = Kc / Kc_prime;
 
 	    D_prime = 1 + (D/(alpha_C*R))*(sqrt((2*pi*Mw)/(R_univ*T)));
@@ -1179,8 +1178,8 @@ extern void ParticlePropagate(Front *fr)
 	    //update particle radius
 
 	    if (eqn_params->if_condensation == YES)
-	        //delta_R = R*R+2*eqn_params->K*s*dt; //without curvature and solute
-	        delta_R = R*R+2*G*(s-Sk)*dt; //with curvature and solute
+	        //delta_R = R*R+2*eqn_params->K*s*dt;
+	        delta_R = R*R+2*G*(s-Sk)*dt;
 	    else
 	        delta_R = R*R;
 

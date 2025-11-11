@@ -255,8 +255,8 @@ static  void melting_flow_driver(
 	l_cartesian->setAdvectionDt();
 	front->dt = std::min(front->dt,CFL*l_cartesian->max_dt);
 		
-	//l_cartesian->initMovieVariables();
-        //v_cartesian->initMovieVariables();
+	l_cartesian->initMovieVariables();
+        v_cartesian->initMovieVariables();
 
         if (eqn_params->prob_type == PARTICLE_TRACKING &&
 		movie_option->plot_particles == YES)
@@ -268,12 +268,12 @@ static  void melting_flow_driver(
         else
 	{
 	    FT_SetOutputCounter(front);
-            //v_cartesian->initMovieVariables();
+            v_cartesian->initMovieVariables();
             if (eqn_params->prob_type == PARTICLE_TRACKING)
                 vtk_plot_scatter(front);
             FT_AddMovieFrame(front,out_name1,YES);
 	}
-	
+
 	FT_TimeControlFilter(front);
 	/*Record the initial condition*/
 	/*v_cartesian->recordField(out_name1,"velocity");*/
@@ -292,7 +292,7 @@ static  void melting_flow_driver(
 	    printf("Passed solving NS equations\n");
 	    v_cartesian->recordTKE();
 	    
-	    if (eqn_params->if_volume_force && front->time < 1.0)
+	    if (eqn_params->if_volume_force && front->time < 2.0)
 	    {
                 v_cartesian->solve(0.0);
 	    }

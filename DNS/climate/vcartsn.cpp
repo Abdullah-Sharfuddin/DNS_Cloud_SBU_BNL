@@ -589,7 +589,7 @@ void VCARTESIAN::computeAdvectionWENO(COMPONENT sub_comp,double* Temp,const doub
                     rhs += m_dt*source[ic];
 		/*advection term computed by WENO*/
 		rhs += m_dt*(p0*field->adv[ic]
-		    + p1*field->adv_old[ic]); 
+		    + p1*field->adv_old[ic]);
 		coeff = 1.0;
                 for (l = 0; l < dim; ++l) v[l] = 0.0;
                 if (field->vel != NULL)
@@ -1758,7 +1758,7 @@ void VCARTESIAN::setBoundary()
 	    break;
 	}
 }	/* end setBoundary */
-/*
+
 void VCARTESIAN::vtk_plot3d(
         const char *varname,double *var)
 {
@@ -1959,8 +1959,7 @@ void VCARTESIAN::vtk_plot3d(
 		clean_up(ERROR);
 	}
         fclose(outfile);
-}       //end vtk_plot_vapor3d
-*/
+}       /* end vtk_plot_vapor3d */
 
 void VCARTESIAN::recordParticles()
 {
@@ -2500,11 +2499,12 @@ void VCARTESIAN::recordMixingLine()
 	{   
 	    radius_array[i] = particle_array[i].radius;
 	    if (particle_array[i].radius > 0)
-		nzeros ++;
+			nzeros ++;
 	    for (j = 0; j < dim; j++)
-                icoords[j] = floor((particle_array[i].center[j] 
-			- top_L[j] + 0.5*top_h[j])/top_h[j]);
-            index = d_index(icoords,top_gmax,dim);
+		{
+            icoords[j] = floor((particle_array[i].center[j] - top_L[j] + 0.5*top_h[j])/top_h[j]);
+		}
+        index = d_index(icoords,top_gmax,dim);
 	    rv += pow(particle_array[i].radius,3.0);
 	    r0 += pow(particle_array[i].R0,3.0);
 	    
@@ -2520,7 +2520,7 @@ void VCARTESIAN::recordMixingLine()
 	rv = ReduceBuff[0];
 	r0 = ReduceBuff[1];
 	nzeros    = (int)ReduceBuff[2];
-#endif 
+#endif
 	rv /= nzeros;
 	r0 /= nzeros;
 	/*compute t_mix*/
@@ -2550,15 +2550,16 @@ void VCARTESIAN::recordMixingLine()
 	    fprintf(file,"%%t_mix    t_evap  t_react   Damkoehler\n");
 	    fclose(file);
 
-            sprintf(fname,"%s/RN",out_name);
-            file = fopen(fname,"w");
-            fprintf(file,"%%time    Rv    Rm    stdDev   N_total\n");
-            fclose(file);
+		sprintf(fname,"%s/RN",out_name);
+		file = fopen(fname,"w");
+		fprintf(file,"%%time    Rv    Rm    stdDev   N_total\n");
+		fclose(file);
 
-            sprintf(fname,"%s/transition",out_name);
-            file = fopen(fname,"w");
-            fprintf(file,"%%time    epsilon    eta    t_react    NL\n");
-            fclose(file);
+		sprintf(fname,"%s/transition",out_name);
+		file = fopen(fname,"w");
+		fprintf(file,"%%time    epsilon    eta    t_react    NL\n");
+		fclose(file);
+		
 	    first = NO;
 	}
 	sprintf(fname,"%s/mixing",out_name);
@@ -2790,20 +2791,17 @@ void VCARTESIAN::recordCondensationRate(char* outname){
 		rect_in_which(coords,ic,top_grid);
 		index = d_index(ic,top_gmax,dim);
 		s = field->supersat[index];
-		FT_IntrpStateVarAtCoords(front,LIQUID_COMP,coords,
-                                field->supersat,getStateSuper,&s,&s);
+		FT_IntrpStateVarAtCoords(front,LIQUID_COMP,coords,field->supersat,getStateSuper,&s,&s);
 		
-	    	Sk = particle_array[i].eqbm_supersat;
+	    Sk = particle_array[i].eqbm_supersat;
 		G = particle_array[i].growth_factor;
 		//Cd_mean += R * s;
-		Cd_mean += R * (s-Sk)*G; //with curvature and solute effects
+		Cd_mean += R * (s-Sk)*G;
 	}
 	pp_gsync();
 	pp_global_sum(&Cd_mean,1);
 		
 	//Cd_mean *= 4.0*PI*eqn_params->rho_l*eqn_params->K/(rho_0*domain_volume);
-	
-	//with curvature and solute effects
 	Cd_mean *= 4.0*PI*eqn_params->rho_l/(rho_0*domain_volume);
 
 	/*output Cd_mean*/
@@ -3246,7 +3244,6 @@ void VCARTESIAN::setDomain()
                                         FLOAT);
 		FT_VectorMemoryAlloc((POINTER*)&field->temperature,
                         comp_size,FLOAT);
-		FT_VectorMemoryAlloc((POINTER*)&field->scalar_force,comp_size,FLOAT);
 	    	first = NO;
 	    }
 	    imin = (lbuf[0] == 0) ? 1 : lbuf[0];
@@ -3261,7 +3258,7 @@ void VCARTESIAN::setDomain()
 	/*save global grid information*/
 	eqn_params->global_grid = &(front->pp_grid->Global_grid);
 }	/* end setDomain */
-/*
+
 void VCARTESIAN::initMovieVariables()
 {
 	PARAMS *params = (PARAMS*)front->extra2;
@@ -3287,7 +3284,7 @@ void VCARTESIAN::initMovieVariables()
 	}
 	else
 	{
-	    // Added for vtk movie of scalar field
+	    /* Added for vtk movie of scalar field */
             if (params->movie_option->plot_vapor == YES)
             	FT_AddVtkScalarMovieVariable(front,"Vapor",field->vapor);
             if (params->movie_option->plot_particles == YES)
@@ -3297,8 +3294,8 @@ void VCARTESIAN::initMovieVariables()
 	}
         if (debugging("trace"))
             printf("Leaving initMovieVariables()\n");
-}	// end initMovieVariables
-*/
+}	/* end initMovieVariables */
+
 static int find_state_at_crossing(
 	Front *front,
 	int *icoords,
@@ -3378,9 +3375,6 @@ void VCARTESIAN::recordLagrangSupersat(const char *out_name)
 	    
 	    FT_IntrpStateVarAtCoords(front,LIQUID_COMP,center,
                                 field->supersat,getStateSuper,&s,&s);
-	    //supersat_array[count++] = s;
-	    
-	    //with curvature and solute effects
 	    supersat_array[count++] = s - Sk;
 	}
 	bin_num = 200;
@@ -3600,11 +3594,7 @@ void VCARTESIAN::initPresetParticles()
 	
 	//For lognormal dry size distribution
 	std::default_random_engine generator;
-	std::lognormal_distribution<double> distribution(0.01,0.15);
-	//The desired mean is 0.1 um and standard deviation is 0.015 um
-	//The built-in lognormal function did not produce that with distribution(0.1,0.015)
-	//Hence distribution(0.01,0.15) is used and later the radii are divided by 10
-	//This happens to produce the required lognormal distribution
+	std::lognormal_distribution<double> distribution(0.2,0.25);
 	double rr;
 
 	count = 0;
@@ -3624,15 +3614,10 @@ void VCARTESIAN::initPresetParticles()
                 continue;
 	    
 	    rr = distribution(generator)/10;
-            particle_array[count].radius_d = rr*1e-6; //when dry aerosol size is lognormal
-            //particle_array[count].radius_d = 0.1*1e-6; //when dry aerosol size is monodisperse
+            particle_array[count].radius_d = rr*1e-6;
             
-	    //Should be used for evaporation study when input radii are different than dry radii
 	    //particle_array[count].radius = gauss_center_limit((POINTER)&gauss_params,xsubi);
-            
-	    // Should be used for condensation study when input radii are same as dry radii
-	    particle_array[count].radius = particle_array[count].radius_d;
-
+            particle_array[count].radius = particle_array[count].radius_d;
             particle_array[count].R0 = particle_array[count].radius;
            
 	    particle_array[count].flag = YES;
@@ -3989,16 +3974,27 @@ void VCARTESIAN::computeVolumeForceLinear()
 	{
 	    first = NO;
 	    /*compute mean kinetic energy dissipation*/
-            eps = eqn_params->disp_rate;
+	    //eps = 0.5*computeDspRateLinear(); 	
+	    //eps = 2.0*computeDspRateLinear(); 	
+            //eqn_params->disp_rate = eps;
 	}
 	eqn_params->disp_rate = computeDspRateLinear();
+        printf("eps_in = %e, eps_out = %e\n",eps,eqn_params->disp_rate);
 	lmin[0] = imin; lmin[1] = jmin;
 	lmax[0] = imax; lmax[1] = jmax;
 	if (dim == 3)
 	{lmin[2] = kmin; lmax[2] = kmax;}
 	urms = computeUrms(vel,dim,lmin,lmax,top_gmax);
 	
-	A = eps/(dim*urms*urms);
+	// For Modified Linear	
+	if (front->dt > 0.010)
+		eps_in = 0.005*exp(front->dt/0.010);
+	else
+		eps_in = 0.0;
+		
+	A = eps_in/(dim*urms*urms);
+	
+	//A = eps/(dim*urms*urms);
 	
 	for (i = 0; i < comp_size; i++)
 	for (j = 0; j < dim; j++)
@@ -4045,8 +4041,6 @@ void VCARTESIAN::computeVolumeForceFourierHefftePlain()
 	    first = NO;
 	    eps = computeDspRate(); 	    
 	    eqn_params->disp_rate = eps;
-	    //eps = 0.0004; //fixed TKE dissipation rate
-	    //eps = 0.0016; //fixed TKE dissipation rate
 	
 	    dim = top_grid->dim;
 	    local_size = 1;
@@ -4141,7 +4135,7 @@ void VCARTESIAN::computeVolumeForceFourierHefftePlain()
 	// TODO: calculation of forced indices can be done just once and maintained
 	// in a static vector
 	int icrds[MAXD], icrds_global[MAXD], count = 0;
-       	static int N0 = 4; // number of modes
+       	static int N0 = 3.91; // number of modes
 	int N_global_physical[MAXD] = {N[0]*pp_grid->gmax[0], 
 		                       N[1]*pp_grid->gmax[1], 
 				       N[2]*pp_grid->gmax[2]};
@@ -4322,9 +4316,10 @@ void VCARTESIAN::computeVolumeForceFourier()
 	if (dim == 2)
 	    N0 = 2; /*wave number shell |N|^2 = N0*/
 	else
-	    //N0 = 2;
-	    N0 = 4;
-	    //N0 = 8;
+	    //N0 = 2.449;
+	    N0 = 3.906;
+	    //N0 = 8.112;
+	    //N0 = 17.378;
 	    
 	if (eqn_params->if_volume_force == NO)
 	    return;
@@ -4487,7 +4482,7 @@ void VCARTESIAN::computeVolumeForceFourier()
                         fy[index1][l] = eps * V[index1][l]/deno[0];
                         fz[index1][l] = eps * W[index1][l]/deno[0];
                     }
-		   
+
 		    if (debugging("volume_force"))
 		    {
    	                printf("U[%d %d %d] = [%e %e], fx = [%e %e]\n",
@@ -4563,6 +4558,315 @@ void VCARTESIAN::computeVolumeForceFourier()
 
 	return;
 }
+
+
+//Determine scalar dissipation rates
+double VCARTESIAN::computeScalarDissip(double* temp)
+{
+	IF_PARAMS *iFparams = (IF_PARAMS*)front->extra1;
+	double DspRat = 0.0;
+	double D = eqn_params->D;
+	int i,j,k,size;
+	int I0,I1;
+	int ii,jj,kk;
+        static int dim;
+	
+	size = 0;
+        for (k = kmin; k < kmax; k++)
+        for (j = jmin; j < jmax; j++)
+        for (i = imin; i < imax; i++)
+	{
+	    size++;
+	    
+	    //Compute dissipation rates
+	    I0 = d_index3d(i,j,k,top_gmax);
+	    ii = i + 1; 
+	    jj = j + 1;
+	    kk = k + 1;
+	    I1 = d_index3d(ii,jj,kk,top_gmax);
+
+	    DspRat += pow((temp[I1]-temp[I0])/top_h[0],2);
+	}
+
+	pp_gsync();
+        pp_global_isum(&size,2);
+        pp_global_sum(&DspRat,2);
+	DspRat = D*DspRat/size;
+	return DspRat;
+}
+
+void VCARTESIAN::computeScalarForce(double *temp) //Low-wavenumber + mean gradient + linear
+{       
+	static int Nr, N[MAXD];
+	static boolean first = YES;
+	static double eps; //mean kinetic energy dissipation
+
+	//for parallelization, global rectangle grid//
+	PP_GRID *pp_grid = front->pp_grid;
+	RECT_GRID *global_grid = &(pp_grid->Global_grid);
+        static int dim,lmin[MAXD],lmax[MAXD],local_size;
+	INTERFACE* grid_intfc = front->grid_intfc;
+        RECT_GRID *top_grid = &topological_grid(grid_intfc);
+	int *global_gmax = global_grid->gmax;
+        int *top_gmax = top_grid->gmax;
+	static double* local_buff;
+
+	if (first == YES)
+	{
+	    first = NO;
+	    dim = top_grid->dim;
+	    local_size = 1;
+	    for (int i = 0; i < dim; i++) {
+     	        lmin[i] = (lbuf[i] == 0) ? 1 : lbuf[i];
+	        lmax[i] = (ubuf[i] == 0) ? top_gmax[i] - 1 : top_gmax[i] - ubuf[i];
+	        N[i] = lmax[i] - lmin[i] + 1;
+	        local_size *= (top_gmax[i] + 1); 
+	    }
+	    Nr = 1;
+	    for (int i = 0; i < dim; i++)
+	        Nr *= N[i]; 
+	}
+    
+	// Set initial scalar dissipation rate
+	if (temp[1]>100)
+	   eps = 2.16e-5;
+	else
+	   eps = 0.00079;
+
+	//the box associated with this MPI rank
+	int pp_icoords[MAXD]; 
+	find_Cartesian_coordinates(pp_mynode(),pp_grid,pp_icoords);
+	heffte::box3d<> const my_box = { {N[0]*pp_icoords[0],N[1]*pp_icoords[1],N[2]*pp_icoords[2]}, 
+		    {N[0]*pp_icoords[0]+N[0]-1,N[1]*pp_icoords[1]+N[1]-1,N[2]*pp_icoords[2]+N[2]-1} };
+	
+	// define the heffte class and the input and output geometry
+	heffte::fft3d<heffte::backend::fftw> fft(my_box, my_box, MPI_COMM_WORLD);
+
+        // vectors with the correct sizes to store the input data
+	std::vector<std::complex<double>> U(fft.size_inbox());
+	std::vector<std::complex<double>> V(fft.size_inbox());
+	std::vector<std::complex<double>> W(fft.size_inbox());
+
+	// vectors with the correct sizes to store the output data
+	std::vector<std::complex<double>> Uhat(fft.size_outbox());
+	std::vector<std::complex<double>> Vhat(fft.size_outbox());
+	std::vector<std::complex<double>> What(fft.size_outbox());
+	
+        // reset the input to zero
+	std::fill(U.begin(),  U.end(),  std::complex<double>(0.0, 0.0));
+	std::fill(V.begin(),  V.end(),  std::complex<double>(0.0, 0.0));
+	std::fill(W.begin(),  W.end(),  std::complex<double>(0.0, 0.0));
+	std::fill(Uhat.begin(),  Uhat.end(),  std::complex<double>(0.0, 0.0));
+	std::fill(Vhat.begin(),  Vhat.end(),  std::complex<double>(0.0, 0.0));
+	std::fill(What.begin(),  What.end(),  std::complex<double>(0.0, 0.0));
+
+        // equivalent to gatherParallelData	
+	double **vel = field->vel;
+	int icoords[MAXD], index = 0;
+        for (int i = lmin[0]; i <= lmax[0]; i++)
+        for (int j = lmin[1]; j <= lmax[1]; j++)
+	for (int k = lmin[2]; k <= lmax[2]; k++)
+        {
+	    icoords[0] = i; icoords[1] = j; icoords[2] = k;
+            int index0 = d_index(icoords,top_gmax,dim);
+	    U.at(index).real( temp[index0] );
+	    V.at(index).real( vel[1][index0] );
+	    W.at(index).real( vel[2][index0] );
+	    index++;
+        }
+       
+	// perform a forward DFT
+	fft.forward(U.data(), Uhat.data(), heffte::scale::full);
+	fft.forward(V.data(), Vhat.data(), heffte::scale::full);
+	fft.forward(W.data(), What.data(), heffte::scale::full);
+
+	//construct forcing term in Fourier space
+	// TODO: calculation of forced indices can be done just once and maintained
+	// in a static vector
+	int icrds[MAXD], icrds_global[MAXD], count = 0;
+       	static int N0 = 3.91; // number of modes
+	int N_global_physical[MAXD] = {N[0]*pp_grid->gmax[0], 
+		                       N[1]*pp_grid->gmax[1], 
+				       N[2]*pp_grid->gmax[2]};
+	std::vector<int> forcing_indices; // maintain a list of indices that are forced for me
+	std::vector<std::array<int,3>> forcing_icoords; // maintain a list of indices that are forced for me
+	for (int i1 = -N0; i1 <= N0; i1++)
+	for (int j1 = -N0; j1 <= N0; j1++)
+	for (int k1 = -N0; k1 <= N0; k1++)
+        {
+	    if ((i1*i1 + j1*j1 + k1*k1) != N0)
+		continue;
+	    count ++;
+	    icrds[0] = i1; icrds[1] = j1; icrds[2] = k1;
+	    // since negative icrds are shifted by grid size 
+	    for (int l = 0; l < dim; l++)
+            {
+		icrds_global[l] = icrds[l];
+                if (icrds[l] < 0) 
+		{
+		    // local coordinate of the point of interest; required to figure out its index
+                    icrds[l] = icrds[l] + N[l] ;
+                    //global coordinate of the point of interest; required to figure out its MPI rank
+		    icrds_global[l] = N_global_physical[l]+icrds_global[l];
+		}
+            }
+  	    std::array<int,3> ficoord = {icrds[0], icrds[1], icrds[2]};
+	    int index1 = icrds[0]+(N[0])*(icrds[1]+N[1]*icrds[2]);
+	    
+	    int pp_coord[MAXD] = {icrds_global[0]/N[0], icrds_global[1]/N[1], icrds_global[2]/N[2]}; 
+	    int rank = domain_id(pp_coord,pp_grid->gmax,dim) ;
+	    if (pp_mynode() == rank)
+	    { 
+		forcing_indices.push_back(index1);
+		forcing_icoords.push_back(ficoord);
+	    }
+	}
+
+        // vectors with the correct sizes to store the input data
+	std::vector<std::complex<double>> fxhat(fft.size_inbox());
+	std::vector<std::complex<double>> fyhat(fft.size_inbox());
+	std::vector<std::complex<double>> fzhat(fft.size_inbox());
+
+	// vectors with the correct sizes to store the output data
+	std::vector<std::complex<double>> fx(fft.size_inbox());
+	std::vector<std::complex<double>> fy(fft.size_inbox());
+	std::vector<std::complex<double>> fz(fft.size_inbox());
+
+        // reset the input to zero
+	std::fill(fxhat.begin(),  fxhat.end(),  std::complex<double>(0.0, 0.0));
+	std::fill(fyhat.begin(),  fyhat.end(),  std::complex<double>(0.0, 0.0));
+	std::fill(fzhat.begin(),  fzhat.end(),  std::complex<double>(0.0, 0.0));
+	std::fill(fx.begin(),  fx.end(),  std::complex<double>(0.0, 0.0));
+	std::fill(fy.begin(),  fy.end(),  std::complex<double>(0.0, 0.0));
+	std::fill(fz.begin(),  fz.end(),  std::complex<double>(0.0, 0.0));
+
+	// for each rank calculate forces at the points with forcings
+	double one_by_2count = 1.0/(2.0*count);
+	for ( auto &fi : forcing_icoords ) {
+
+            int pc = fi[0] + N[0]*(fi[1] + N[1]*fi[2]);
+	    double deno = sqr(Uhat.at(pc).real())+sqr(Uhat.at(pc).imag());
+                        //+ sqr(Vhat.at(pc).real())+sqr(Vhat.at(pc).imag())
+		        //+ sqr(What.at(pc).real())+sqr(What.at(pc).imag());
+	    double eps_by_2ctdeno = eps * one_by_2count / deno;
+
+            fxhat.at(pc).real( eps_by_2ctdeno * Uhat.at(pc).real() );
+            fyhat.at(pc).real( eps_by_2ctdeno * Vhat.at(pc).real() );
+            fzhat.at(pc).real( eps_by_2ctdeno * What.at(pc).real() );
+            fxhat.at(pc).imag( eps_by_2ctdeno * Uhat.at(pc).imag() );
+            fyhat.at(pc).imag( eps_by_2ctdeno * Vhat.at(pc).imag() );
+            fzhat.at(pc).imag( eps_by_2ctdeno * What.at(pc).imag() );
+	   
+	}	
+
+	// perform a backward DFT
+	fft.backward(fxhat.data(), fx.data());// , heffte::scale::full
+	fft.backward(fyhat.data(), fy.data());// , heffte::scale::full
+	fft.backward(fzhat.data(), fz.data());// , heffte::scale::full
+		
+        // equivalent to scatterParallelData
+	int index0, J;
+	J = 0;
+	double force_term_F;
+	int num = 0;
+	double beta = 0.0;
+	double alpha = 0.0;
+        double epsilon_theta;
+	epsilon_theta = computeScalarDissip(temp);
+        
+	double mean_temp,var_temp; 
+	Deviation(temp,front,mean_temp,var_temp); 
+	
+	for (int i = lmin[0]; i <= lmax[0]; i++)
+        for (int j = lmin[1]; j <= lmax[1]; j++)
+        for (int k = lmin[2]; k <= lmax[2]; k++)
+	{
+	    int index0 = d_index3d(i,j,k,top_gmax);
+	    double force_term_F = fx.at(J).real();
+	    force_term_F = abs(force_term_F);
+	    
+	    if (source[index0] > 0.0)
+	    {
+    	    source[index0] += force_term_F;
+	    }
+	    if (source[index0] < 0.0)
+	    {
+             	source[index0] -= force_term_F;
+	    }
+	    J++;
+	    
+	    //beta = beta + (force_term_F/vel[2][index0]);
+	    //alpha = alpha + pow(((2*force_term_F*var_temp)/(epsilon_theta*temp[index0])),2)*var_temp;
+            //num++;
+    	}
+/*
+	double force_term_MG;
+
+#if defined(__MPI)
+    	pp_gsync();
+    	pp_global_sum(&beta,1);
+    	pp_global_isum(&num,1);
+#endif
+
+	beta = beta/num; //mean graident
+	if (abs(beta) > 1e5)
+		beta = 0.0;
+	if (abs(beta) < 1e-5)
+		beta = 0.0;
+
+	printf("beta value = %f\n",beta);
+
+	// For mean gradient forcing
+        for (int I = 0; I < comp_size; I++)
+        {
+		force_term_MG = abs(beta*vel[2][I]);
+	
+		if (source[I] > 0.0)
+		{
+             		source[I] += force_term_MG;
+		}
+		if (source[I] < 0.0)
+		{
+             		source[I] -= force_term_MG;
+		}
+    	}
+
+	
+	double force_term_L;
+#if defined(__MPI)
+    	pp_gsync();
+    	pp_global_sum(&alpha,1);
+    	pp_global_isum(&num,1);
+#endif
+
+	alpha = alpha/num; //imposed variance
+	if (abs(alpha) > 1e5)
+		alpha = 0.0;
+	if (abs(alpha) < 1e-15)
+		alpha = 0.0;
+	
+	printf("alpha value = %f\n",alpha);
+
+	// For linear forcing
+        for (int I = 0; I < comp_size; I++)
+        {
+		force_term_L = abs(0.5*epsilon_theta/var_temp*temp[I]*sqrt(alpha/var_temp));
+	
+		if (source[I] > 0.0)
+		{
+             		source[I] += force_term_L;
+		}
+		if (source[I] < 0.0)
+		{
+             		source[I] -= force_term_L;
+		}
+    	}
+*/
+	FT_ParallelExchGridArrayBuffer(source,front,NULL);
+	
+	fflush(stdout);
+}
+
 
 static void computeFluctuation(Front* front, double **ext_accel, int size, int dim)
 {
@@ -4682,18 +4986,10 @@ void VCARTESIAN::computeVaporSource()
 	    Sk = particle_array[i].eqbm_supersat;
 	    G = particle_array[i].growth_factor;
 
-	    //without curvature and solute effects
-	    //coeff = 4.0*PI*particle_array[i].rho * eqn_params->K/ (rho_0 * a3);
-	    
-	    //with curvature and solute effects
 	    coeff = 4.0*PI*particle_array[i].rho *G / (rho_0 * a3);
 
 	    if (eqn_params->if_condensation)
 	    {
-		//without curvature and solute effects
-	    	//source[index] += -1000.0 * coeff * supersat[index]* particle_array[i].radius;
-		
-		//with curvature and solute effects
 	    	source[index] += -1000.0 * coeff * (supersat[index]-Sk)* particle_array[i].radius;
 	    }
 	    if (particle_array[i].radius > 0)
@@ -4803,22 +5099,11 @@ void VCARTESIAN::computeTemperatureSource()
 	    Sk = particle_array[i].eqbm_supersat;
 	    G = particle_array[i].growth_factor;
 
-            //without curvature and solute effects
-	    //coeff = 4.0*PI*particle_array[i].rho * eqn_params->K / (rho_0 * a3);
-            
-	    //with curvature and solute effects
-	    coeff = 4.0*PI*particle_array[i].rho *G / (rho_0 * a3);
+            coeff = 4.0*PI*particle_array[i].rho *G / (rho_0 * a3);
 
             if (eqn_params->if_condensation)
 	    {
-		//without curvature and solute effects
-                //source[index] += L/cp * coeff * supersat[index]* particle_array[i].radius;
-                
-		//with curvature and solute effects
-		source[index] += L/cp * coeff * (supersat[index]-Sk)* particle_array[i].radius;
-                
-		//with curvature and solute effects and adiabatic lapse rate
-		//source[index] += L/cp * coeff * (supersat[index]-Sk)* particle_array[i].radius - (9.8/1005)*vel[2][index];
+                source[index] += L/cp * coeff * (supersat[index]-Sk)* particle_array[i].radius;
 	    }
         }
 
@@ -4851,7 +5136,7 @@ void VCARTESIAN::recordParticleRadius()
 	{	
 	for (i = 0; i < eqn_params->num_drops; i++)
 	{		
-		fprintf(file,"%15.10f  %15.10f  %15.10f  %d\n",particle_array[i].radius_d,particle_array[i].radius,particle_array[i].eqbm_supersat,i);
+		fprintf(file,"%15.14f  %15.14f  %15.14f  %d\n",particle_array[i].radius_d,particle_array[i].radius,particle_array[i].eqbm_supersat,i);
 	}
 	}
 
@@ -4860,7 +5145,7 @@ void VCARTESIAN::recordParticleRadius()
 	{
 	for (i = 0; i < eqn_params->num_drops; i++)
 	{		
-		fprintf(file,"%15.10f  %15.10f  %15.10f\n",particle_array[i].radius_c,particle_array[i].radius,particle_array[i].eqbm_supersat);
+		fprintf(file,"%15.14f  %15.14f  %15.14f\n",particle_array[i].radius_c,particle_array[i].radius,particle_array[i].eqbm_supersat);
 	}
 	}
 	fclose(file);
@@ -4889,7 +5174,7 @@ void VCARTESIAN::recordNodalValues()
 	for (i = imin; i <= imax; ++i)
         {
 		index = d_index3d(i,j,k,top_gmax);
-                fprintf(file,"%15.10f  %15.10f  %15.10f  %15.10f  %15.10f  %15.10f\n",vel[0][index],vel[1][index],vel[2][index],field->temperature[index],field->vapor[index],field->supersat[index]);
+                fprintf(file,"%15.14f  %15.14f  %15.14f  %15.14f  %15.14f  %15.14f\n",vel[0][index],vel[1][index],vel[2][index],field->temperature[index],field->vapor[index],field->supersat[index]);
 	}		
 	
 	fclose(file);
